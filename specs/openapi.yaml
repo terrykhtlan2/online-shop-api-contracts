@@ -36,7 +36,7 @@ paths:
   /products:
     $ref: './paths/products.yaml'
   /products/{productId}:
-    $ref: './paths/products.yaml#/~1products~1{productId}'
+    $ref: './paths/products.yaml#/paths/~1products~1{productId}'
   /notifications:
     $ref: './paths/notifications.yaml'
 
@@ -54,7 +54,7 @@ components:
   
   schemas:
     Product:
-      $ref: './components/schemas/product.yaml'
+      $ref: './components/schemas/product.yaml#/Product'
     NotificationRequest:
       $ref: './components/schemas/notification.yaml#/NotificationRequest'
     NotificationResponse:
