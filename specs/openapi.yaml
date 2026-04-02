@@ -2,40 +2,22 @@ openapi: 3.0.3
 
 info:
   title: MyAPITerry Enterprise Platform API
-  description: |
-    Unified Enterprise Orchestrator for the Online Shop ecosystem.
-    This contract aggregates 35+ bounded contexts using a Federated Domain-Driven Design (DDD) approach.
   version: 1.0.0
-  contact:
-    name: Terry K
-    email: terryk@company.com.au
-
-# 🔐 GLOBAL GOVERNANCE: SECURITY & SERVERS
-security:
-  - BearerAuth: []
 
 servers:
   - url: https://api.online-shop.com/v1
-    description: Production Gateway
-  - url: https://{environment}-api.online-shop.com/v1
-    description: Tiered Environments
-    variables:
-      environment:
-        default: dev
-        enum: [dev, sit, uat, prod]
 
-# 🗺️ DOMAIN DISPATCH MAP (The Orchestration Layer)
-# Each $ref points to a domain-specific paths file.
+security:
+  - BearerAuth: []
+
 paths:
   /products:
-    $ref: './domains/products/paths.yaml'
+    $ref: './domains/products/paths.yaml#/products'
   /products/{productId}:
-    $ref: './domains/products/paths.yaml#/~1{productId}'
+    $ref: './domains/products/paths.yaml#/products~1{productId}'
   /notifications:
-    $ref: './domains/notifications/paths.yaml'
-  # Future domains like /payments or /orders are simply added here.
+    $ref: './domains/notifications/paths.yaml#/notifications'
 
-# 🧩 SHARED KERNEL (Global Standards)
 components:
   securitySchemes:
     BearerAuth:
@@ -43,16 +25,19 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-  # Standardized Headers, Query Params, and Path Params
   parameters:
-    $ref: './shared/headers.yaml'
-  
-  # Cross-Domain Schemas
+    CorrelationIdHeader:
+      $ref: './shared/headers.yaml#/CorrelationIdHeader'
+    PageParam:
+      $ref: './shared/headers.yaml#/PageParam'
+    PageSizeParam:
+      $ref: './shared/headers.yaml#/PageSizeParam'
+    ProductIdParam:
+      $ref: './shared/headers.yaml#/ProductIdParam'
+
+  responses:
+    $ref: './components/responses/common.yaml'
+
   schemas:
     ErrorResponse:
       $ref: './shared/errors.yaml#/ErrorResponse'
-    # Domain-specific schemas are referenced within their own path files.
-
-  # Unified Enterprise Error Model
-  responses:
-    $ref: './shared/errors.yaml'
