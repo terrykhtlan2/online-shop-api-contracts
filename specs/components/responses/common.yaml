@@ -4,25 +4,25 @@ Accepted:
   content:
     application/json:
       schema:
-        $ref: '../schemas/notification.yaml#/NotificationResponse'
+        $ref: '../schemas/notification.yaml#/components/schemas/NotificationResponse'
 
 BadRequest:
   description: Bad request
   content:
     application/json:
       schema:
-        $ref: '../schemas/common.yaml#/ErrorResponse'
+        $ref: '../schemas/common.yaml#/components/schemas/ErrorResponse'
 
 NotFound:
   description: Resource not found
   content:
     application/json:
       schema:
-        $ref: '../schemas/common.yaml#/ErrorResponse'
+        $ref: '../schemas/common.yaml#/components/schemas/ErrorResponse'
 
 InternalServerError:
   description: Internal server error
   content:
     application/json:
       schema:
-        $ref: '../schemas/common.yaml#/ErrorResponse'
+        $ref: '../schemas/common.yaml#/components/schemas/ErrorResponse'
