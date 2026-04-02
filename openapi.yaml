@@ -1,0 +1,414 @@
+openapi: 3.0.3
+
+info:
+  title: MyAPITerry Online Shop API
+  description: |
+    Enterprise REST API for an online shopping platform.
+    This API manages products, customers, orders, payments, inventory, and notifications.
+    The API follows a Design-First approach.
+  version: 1.0.0
+  contact:
+    name: Terry K
+    email: terryk@company.com.au
+
+# 🔐 GLOBAL SECURITY (ENTERPRISE BEST PRACTICE)
+security:
+  - BearerAuth: []
+
+servers:
+  - url: https://virtserver.swaggerhub.com/TERRYKHTLAN2_1/MyAPITerry/1.0.0
+    description: SwaggerHub API Auto Mocking
+
+  - url: https://{environment}-api.online-shop.com/{basePath}
+    description: Enterprise API environments
+    variables:
+      environment:
+        default: dev
+        enum: [dev, sit, uat, prod]
+      basePath:
+        default: v1
+
+tags:
+  - name: Products
+  - name: Notifications
+
+paths:
+
+  /products:
+    get:
+      tags: [Products]
+      summary: Retrieve product catalogue
+      operationId: getProducts
+
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Products]
+      summary: Create a new product
+      operationId: createProduct
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /products/{productId}:
+    get:
+      tags: [Products]
+      summary: Retrieve product by ID
+      operationId: getProductById
+
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags: [Products]
+      summary: Update product
+      operationId: updateProduct
+
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [Products]
+      summary: Delete product (soft delete)
+      operationId: deleteProduct
+
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+
+      responses:
+        '204':
+          description: Product deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /notifications:
+    post:
+      tags: [Notifications]
+      summary: Dispatch enterprise notification
+      operationId: sendNotification
+
+      parameters:
+        - $ref: '#/components/parameters/NotificationChannelParam'
+        - $ref: '#/components/parameters/LanguageParam'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationRequest'
+
+      responses:
+        '202':
+          description: Notification accepted for processing
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      
+      # ✔ NEW: THE CALLBACK BLOCK
+      # This defines the "Outbound" call your server makes to the client
+      
+      
+      # ✔ ENTERPRISE DESIGN: SECURE EVENT-DRIVEN CALLBACK
+      # This section describes the "Reverse API" where your server pushes data to the client.
+      callbacks:
+        onNotificationComplete:
+          # RUNTIME EXPRESSION: This tells your code to look at the client's initial request 
+          # body and grab the specific URL they provided in the 'callbackUrl' field.
+          '{$request.body#/callbackUrl}': 
+            post:
+              summary: Secure status update sent to the client
+              description: |
+                Once the background worker (e.g., AWS Lambda or a Worker Service) finishes 
+                processing the notification batch, it will POST the final status here.
+                
+                **Security Requirement:** All outbound requests include an 'X-Terry-Signature'. The client must 
+                verify this HMAC SHA-256 hash using their shared secret to ensure 
+                the request actually came from Terry Khtlan Consulting.
+              
+              parameters:
+                - name: X-Terry-Signature
+                  in: header
+                  required: true
+                  description: HMAC SHA-256 signature for payload integrity and authenticity.
+                  schema:
+                    type: string
+                - name: X-Retry-Attempt
+                  in: header
+                  description: |
+                    The current retry count for this specific event. 
+                    Used for monitoring client-side downtime.
+                  schema:
+                    type: integer
+                    default: 0
+
+              requestBody:
+                description: The final delivery status payload.
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      # This contract ensures the client receives a consistent JSON structure.
+                      $ref: '#/components/schemas/NotificationWebhookPayload'
+              
+              responses:
+                '200':
+                  description: |
+                    The client has successfully received and acknowledged the webhook. 
+                    The client should process this IDEMPOTENTLY (check if notificationId 
+                    was already processed) before responding.
+                '503':
+                  description: |
+                    The client is temporarily unavailable. This will trigger the 
+                    Exponential Backoff retry logic on the server side.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ProductIdParam:
+      name: productId
+      in: path
+      required: true
+      schema:
+        type: string
+        example: "PROD-123"
+
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+
+    PageSizeParam:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        default: 20
+
+    CorrelationIdHeader:
+      name: x-correlation-id
+      in: header
+      schema:
+        type: string
+        format: uuid
+
+    NotificationChannelParam:
+      name: channel
+      in: query
+      required: true
+      schema:
+        type: string
+        enum: [email, sms, push, whatsapp]
+
+    LanguageParam:
+      name: lang
+      in: query
+      schema:
+        type: string
+        example: en-au
+
+  schemas:
+    Product:
+      type: object
+      required: [id, name, price]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+
+    ProductListResponse:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+
+    # ✔ UPDATED: Added callbackUrl to the request
+    NotificationRequest:
+      type: object
+      required: [recipient, templateKey, callbackUrl]
+      properties:
+        recipient:
+          type: string
+        templateKey:
+          type: string
+          enum: [LOYALTY_MILESTONE, ORDER_SHIPPED, PAYMENT_SUCCESS, LOW_STOCK]
+        callbackUrl:
+          type: string
+          format: uri
+          description: The client's endpoint that will receive the status update webhook.
+          example: "https://client-marketing-portal.com/hooks/notifications"
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    NotificationResponse:
+      type: object
+      required: [notificationId, status, timestamp]
+      properties: 
+        notificationId: 
+          type: string
+          description: Unique identification for tracking the notification.
+          example: "Notif-123456"
+        status: 
+          type: string
+          enum: [ACCEPTED, QUEUED, SENT, FAILED]
+          example: ACCEPTED
+        timestamp:
+          type: string
+          format: date-time
+          description: Time the request was accepted.
+          example: "2026-03-17T14:30:00Z"
+
+    # ✔ NEW: This defines the payload the SERVER sends to the CLIENT
+    NotificationWebhookPayload:
+      type: object
+      required: [notificationId, status, completedAt]
+      properties:
+        notificationId:
+          type: string
+          example: "Notif-123456"
+        status:
+          type: string
+          enum: [SENT, DELIVERED, FAILED]
+        completedAt:
+          type: string
+          format: date-time
+        summary:
+          type: string
+          example: "Successfully delivered to 4,998 recipients."
+
+    ErrorResponse:
+      type: object
+      required: [code, message, correlationId, timestamp]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        correlationId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    # ✔ NEW: Standardized Accepted Response for the callback logic
+    Accepted:
+      description: The request has been accepted and queued.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotificationResponse'
+
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
