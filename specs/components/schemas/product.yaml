@@ -1,9 +1,11 @@
+# specs/components/schemas/product.yaml
+
 Product:
   type: object
   required: [id, name, price]
   properties:
     id:
-      type: integer
+      type: string
     name:
       type: string
     price:
@@ -22,4 +24,4 @@ ProductListResponse:
     products:
       type: array
       items:
-        $ref: '#/components/schemas/Product'
+        $ref: '#/Product'
