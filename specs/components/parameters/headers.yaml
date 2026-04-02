@@ -5,9 +5,7 @@
 CorrelationIdHeader:
   name: x-correlation-id
   in: header
-  description: |
-    Unique ID to trace a request across multiple microservices. 
-    Essential for debugging and logs.
+  description: Unique ID to trace a request across microservices.
   required: false
   schema:
     type: string
@@ -18,7 +16,7 @@ CorrelationIdHeader:
 PageParam:
   name: page
   in: query
-  description: The page number to retrieve.
+  description: Page number
   schema:
     type: integer
     minimum: 1
@@ -27,7 +25,7 @@ PageParam:
 PageSizeParam:
   name: pageSize
   in: query
-  description: Number of items per page.
+  description: Items per page
   schema:
     type: integer
     minimum: 1
@@ -37,18 +35,15 @@ PageSizeParam:
 LanguageParam:
   name: lang
   in: query
-  description: Preferred language for the response content.
+  description: Language code
   schema:
     type: string
-    example: "en-au"
-    default: "en-au"
+    default: en-au
 
-# --- PATH PARAMETERS ---
 ProductIdParam:
   name: productId
   in: path
   required: true
-  description: The unique identifier of the product.
+  description: Product ID
   schema:
     type: string
-    example: "PROD-100"
