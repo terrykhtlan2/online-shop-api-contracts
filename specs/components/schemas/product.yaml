@@ -1,39 +1,25 @@
-# specs/paths/products.yaml
-get:
-  tags: [Products]
-  summary: Retrieve product catalogue
-  operationId: getProducts
-  parameters:
-    - $ref: '../components/parameters/headers.yaml#/PageParam'
-    - $ref: '../components/parameters/headers.yaml#/PageSizeParam'
-  responses:
-    '200':
-      description: Successful response
-      content:
-        application/json:
-          schema:
-            $ref: '../components/schemas/product.yaml#/ProductListResponse'
-    '400':
-      $ref: '../components/responses/common.yaml#/BadRequest'
-    '500':
-      $ref: '../components/responses/common.yaml#/InternalServerError'
+Product:
+  type: object
+  required: [id, name, price]
+  properties:
+    id:
+      type: integer
+    name:
+      type: string
+    price:
+      type: number
+      format: double
 
-post:
-  tags: [Products]
-  summary: Create a new product
-  operationId: createProduct
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: '../components/schemas/product.yaml#/Product'
-  responses:
-    '201':
-      description: Product created successfully
-      content:
-        application/json:
-          schema:
-            $ref: '../components/schemas/product.yaml#/Product'
-    '400':
-      $ref: '../components/responses/common.yaml#/BadRequest'
+ProductListResponse:
+  type: object
+  properties:
+    totalItems:
+      type: integer
+    page:
+      type: integer
+    pageSize:
+      type: integer
+    products:
+      type: array
+      items:
+        $ref: '#/Product'
