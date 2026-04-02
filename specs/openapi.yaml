@@ -1,46 +1,41 @@
 openapi: 3.0.3
 
 info:
-  title: MyAPITerry Online Shop API
+  title: MyAPITerry Enterprise Platform API
   description: |
-    Enterprise REST API for an online shopping platform.
-    This API manages products, customers, orders, payments, inventory, and notifications.
-    The API follows a Design-First approach.
+    Unified Enterprise Orchestrator for the Online Shop ecosystem.
+    This contract aggregates 35+ bounded contexts using a Federated Domain-Driven Design (DDD) approach.
   version: 1.0.0
   contact:
     name: Terry K
     email: terryk@company.com.au
 
-# 🔐 GLOBAL SECURITY
+# 🔐 GLOBAL GOVERNANCE: SECURITY & SERVERS
 security:
   - BearerAuth: []
 
 servers:
-  - url: https://virtserver.swaggerhub.com/TERRYKHTLAN2_1/MyAPITerry/1.0.0
-    description: SwaggerHub API Auto Mocking
-  - url: https://{environment}-api.online-shop.com/{basePath}
-    description: Enterprise API environments
+  - url: https://api.online-shop.com/v1
+    description: Production Gateway
+  - url: https://{environment}-api.online-shop.com/v1
+    description: Tiered Environments
     variables:
       environment:
         default: dev
         enum: [dev, sit, uat, prod]
-      basePath:
-        default: v1
 
-tags:
-  - name: Products
-  - name: Notifications
-
-# 🏗️ DOMAIN ORCHESTRATION
+# 🗺️ DOMAIN DISPATCH MAP (The Orchestration Layer)
+# Each $ref points to a domain-specific paths file.
 paths:
   /products:
-    $ref: './paths/products.yaml'
+    $ref: './domains/products/paths.yaml'
   /products/{productId}:
-    $ref: './paths/products.yaml#/paths/~1products~1{productId}'
+    $ref: './domains/products/paths.yaml#/~1{productId}'
   /notifications:
-    $ref: './paths/notifications.yaml'
+    $ref: './domains/notifications/paths.yaml'
+  # Future domains like /payments or /orders are simply added here.
 
-# 🧩 SHARED ENTERPRISE COMPONENTS
+# 🧩 SHARED KERNEL (Global Standards)
 components:
   securitySchemes:
     BearerAuth:
@@ -48,18 +43,16 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-  # These now point to your modular files
+  # Standardized Headers, Query Params, and Path Params
   parameters:
-    $ref: './components/parameters/headers.yaml'
+    $ref: './shared/headers.yaml'
   
+  # Cross-Domain Schemas
   schemas:
-    Product:
-      $ref: './components/schemas/product.yaml#/Product'
-    NotificationRequest:
-      $ref: './components/schemas/notification.yaml#/NotificationRequest'
-    NotificationResponse:
-      $ref: './components/schemas/notification.yaml#/NotificationResponse'
-    # ... Add others as you move them
+    ErrorResponse:
+      $ref: './shared/errors.yaml#/ErrorResponse'
+    # Domain-specific schemas are referenced within their own path files.
 
+  # Unified Enterprise Error Model
   responses:
-    $ref: './components/responses/common.yaml'
+    $ref: './shared/errors.yaml'
