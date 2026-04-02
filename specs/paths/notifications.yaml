@@ -1,1 +1,74 @@
+# This file contains only the Notification Domain logic
+# It references shared components using relative paths
 
+post:
+  tags:
+    - Notifications
+  summary: Dispatch enterprise notification
+  description: |
+    Accepts a notification request and queues it for asynchronous processing.
+    Status updates are delivered via the registered webhook.
+  operationId: sendNotification
+
+  parameters:
+    - $ref: '../components/parameters/headers.yaml#/CorrelationIdHeader'
+    # These refs assume you've moved the inline parameters to the headers.yaml file
+    - name: channel
+      in: query
+      required: true
+      schema:
+        type: string
+        enum: [email, sms, push, whatsapp]
+    - name: lang
+      in: query
+      schema:
+        type: string
+        example: en-au
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/notification.yaml#/NotificationRequest'
+
+  responses:
+    '202':
+      $ref: '../components/responses/common.yaml#/Accepted'
+    '400':
+      $ref: '../components/responses/common.yaml#/BadRequest'
+    '500':
+      $ref: '../components/responses/common.yaml#/InternalServerError'
+
+  # ✔ ENTERPRISE DESIGN: SECURE EVENT-DRIVEN CALLBACK
+  callbacks:
+    onNotificationComplete:
+      '{$request.body#/callbackUrl}':
+        post:
+          summary: Secure status update sent to the client
+          description: |
+            Outbound webhook triggered upon completion of the notification job.
+            
+            **Security:** Verify the `X-Terry-Signature` (HMAC SHA-256) using your shared secret.
+          parameters:
+            - name: X-Terry-Signature
+              in: header
+              required: true
+              schema:
+                type: string
+            - name: X-Retry-Attempt
+              in: header
+              schema:
+                type: integer
+                default: 0
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '../components/schemas/notification.yaml#/NotificationWebhookPayload'
+          responses:
+            '200':
+              description: Webhook received and acknowledged.
+            '503':
+              description: Client busy; retry logic will be initiated.
