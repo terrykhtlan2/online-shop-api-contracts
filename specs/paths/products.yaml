@@ -1,82 +1,79 @@
-# This file handles the HTTP methods for Products
+# specs/domains/products/paths.yaml
+
 /products:
   get:
-    tags: 
+    tags:
       - Products
     summary: Retrieve product catalogue
     operationId: getProducts
-    description: Returns a paginated list of all products in the shop.
-    
+
     parameters:
-      - $ref: '../components/parameters/headers.yaml#/PageParam'
-      - $ref: '../components/parameters/headers.yaml#/PageSizeParam'
-      - $ref: '../components/parameters/headers.yaml#/CorrelationIdHeader'
-  
+      - $ref: '../../shared/headers.yaml#/PageParam'
+      - $ref: '../../shared/headers.yaml#/PageSizeParam'
+      - $ref: '../../shared/headers.yaml#/CorrelationIdHeader'
+
     responses:
       '200':
-        description: Successful response
+        description: Success
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/product.yaml#/ProductListResponse'
+              $ref: '../../components/schemas/product.yaml#/ProductListResponse'
       '400':
-        $ref: '../components/responses/common.yaml#/BadRequest'
+        $ref: '../../components/responses/common.yaml#/BadRequest'
       '500':
-        $ref: '../components/responses/common.yaml#/InternalServerError'
+        $ref: '../../components/responses/common.yaml#/InternalServerError'
 
   post:
-    tags: 
+    tags:
       - Products
-    summary: Create a new product
+    summary: Create product
     operationId: createProduct
-    description: Adds a new product to the inventory. Requires enterprise admin perms.
-    
+
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '../components/schemas/product.yaml#/Product'
-    
+            $ref: '../../components/schemas/product.yaml#/Product'
+
     responses:
       '201':
-        description: Product created successfully
+        description: Created
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/product.yaml#/Product'
+              $ref: '../../components/schemas/product.yaml#/Product'
       '400':
-        $ref: '../components/responses/common.yaml#/BadRequest'
+        $ref: '../../components/responses/common.yaml#/BadRequest'
       '401':
-        description: Unauthorized - Missing or invalid authentication
+        description: Unauthorized
       '403':
-        description: Forbidden - Enterprise admin permissions required
+        description: Forbidden
       '500':
-        $ref: '../components/responses/common.yaml#/InternalServerError'
+        $ref: '../../components/responses/common.yaml#/InternalServerError'
 
 /products/{productId}:
   get:
-    tags: 
+    tags:
       - Products
-    summary: Retrieve product by ID
+    summary: Get product by ID
     operationId: getProductById
+
     parameters:
-      - name: productId
-        in: path
-        required: true
-        schema:
-          type: string
-      - $ref: '../components/parameters/headers.yaml#/CorrelationIdHeader'
+      - $ref: '../../shared/headers.yaml#/ProductIdParam'
+      - $ref: '../../shared/headers.yaml#/CorrelationIdHeader'
+
     responses:
       '200':
-        description: Product details
+        description: Success
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/product.yaml#/Product'
+              $ref: '../../components/schemas/product.yaml#/Product'
       '404':
-        $ref: '../components/responses/common.yaml#/NotFound'
+        $ref: '../../components/responses/common.yaml#/NotFound'
       '400':
-        $ref: '../components/responses/common.yaml#/BadRequest'
+        $ref: '../../components/responses/common.yaml#/BadRequest'
       '500':
-        $ref: '../components/responses/common.yaml#/InternalServerError'
+        $ref: '../../components/responses/common.yaml#/InternalServerError'
