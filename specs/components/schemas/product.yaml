@@ -22,4 +22,4 @@ ProductListResponse:
     products:
       type: array
       items:
-        $ref: '#/Product'
+        $ref: '#/components/schemas/Product'
