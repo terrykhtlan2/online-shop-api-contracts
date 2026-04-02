@@ -1,1 +1,28 @@
+# specs/components/responses/common.yaml
+Accepted:
+  description: The request has been accepted and queued.
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/notification.yaml#/NotificationResponse'
 
+BadRequest:
+  description: Bad request
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yaml#/ErrorResponse'
+
+NotFound:
+  description: Resource not found
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yaml#/ErrorResponse'
+
+InternalServerError:
+  description: Internal server error
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yaml#/ErrorResponse'
