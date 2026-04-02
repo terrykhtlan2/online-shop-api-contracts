@@ -1,7 +1,7 @@
 # specs/components/responses/common.yaml
 
 Accepted:
-  description: The request has been accepted and queued.
+  description: Request accepted
   content:
     application/json:
       schema:
