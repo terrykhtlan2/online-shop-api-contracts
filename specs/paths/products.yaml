@@ -1,41 +1,42 @@
 # This file handles the HTTP methods for Products
-get:
-  tags: 
-    - Products
-  summary: Retrieve product catalogue
-  operationId: getProducts
-  description: Returns a paginated list of all products in the shop.
+/products:
+  get:
+    tags: 
+      - Products
+    summary: Retrieve product catalogue
+    operationId: getProducts
+    description: Returns a paginated list of all products in the shop.
+    
+    parameters:
+      - $ref: '../components/parameters/headers.yaml#/PageParam'
+      - $ref: '../components/parameters/headers.yaml#/PageSizeParam'
+      - $ref: '../components/parameters/headers.yaml#/CorrelationIdHeader'
   
-  parameters:
-    - $ref: '../components/parameters/headers.yaml#/PageParam'
-    - $ref: '../components/parameters/headers.yaml#/PageSizeParam'
-    - $ref: '../components/parameters/headers.yaml#/CorrelationIdHeader'
+    responses:
+      '200':
+        description: Successful response
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/product.yaml#/ProductListResponse'
+      '400':
+        $ref: '../components/responses/common.yaml#/BadRequest'
+      '500':
+        $ref: '../components/responses/common.yaml#/InternalServerError'
 
-  responses:
-    '200':
-      description: Successful response
+  post:
+    tags: 
+      - Products
+    summary: Create a new product
+    operationId: createProduct
+    description: Adds a new product to the inventory. Requires enterprise admin perms.
+    
+    requestBody:
+      required: true
       content:
         application/json:
           schema:
-            $ref: '../components/schemas/product.yaml#/ProductListResponse'
-    '400':
-      $ref: '../components/responses/common.yaml#/BadRequest'
-    '500':
-      $ref: '../components/responses/common.yaml#/InternalServerError'
-
-post:
-  tags: 
-    - Products
-  summary: Create a new product
-  operationId: createProduct
-  description: Adds a new product to the inventory. Requires enterprise admin perms.
-  
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: '../components/schemas/product.yaml#/Product'
+            $ref: '../components/schemas/product.yaml#/Product'
 
   responses:
     '201':
