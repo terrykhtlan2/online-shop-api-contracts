@@ -19,6 +19,7 @@ paths:
     $ref: './domains/notifications/paths.yaml#/notifications'
 
 components:
+
   securitySchemes:
     BearerAuth:
       type: http
@@ -27,17 +28,17 @@ components:
 
   parameters:
     CorrelationIdHeader:
-      $ref: './shared/headers.yaml#/CorrelationIdHeader'
+      $ref: './components/parameters/headers.yaml#/CorrelationIdHeader'
     PageParam:
-      $ref: './shared/headers.yaml#/PageParam'
+      $ref: './components/parameters/headers.yaml#/PageParam'
     PageSizeParam:
-      $ref: './shared/headers.yaml#/PageSizeParam'
+      $ref: './components/parameters/headers.yaml#/PageSizeParam'
     ProductIdParam:
-      $ref: './shared/headers.yaml#/ProductIdParam'
+      $ref: './components/parameters/headers.yaml#/ProductIdParam'
 
   responses:
     $ref: './components/responses/common.yaml'
 
   schemas:
     ErrorResponse:
-      $ref: './shared/errors.yaml#/ErrorResponse'
+      $ref: './components/schemas/errors.yaml#/ErrorResponse'
