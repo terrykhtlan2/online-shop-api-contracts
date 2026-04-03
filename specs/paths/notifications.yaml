@@ -8,6 +8,7 @@
     operationId: sendNotification
 
     parameters:
+      - $ref: '../components/parameters/headers.yaml#/IdempotencyKeyHeader'
       - $ref: '../../shared/headers.yaml#/CorrelationIdHeader'
       - $ref: '../../shared/headers.yaml#/LanguageParam'
       - name: channel
