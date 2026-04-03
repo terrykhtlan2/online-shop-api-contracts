@@ -8,9 +8,10 @@
     operationId: sendNotification
 
     parameters:
-      - $ref: '../components/parameters/headers.yaml#/IdempotencyKeyHeader'
-      - $ref: '../../shared/headers.yaml#/CorrelationIdHeader'
-      - $ref: '../../shared/headers.yaml#/LanguageParam'
+      - $ref: '../../components/parameters/headers.yaml#/IdempotencyKeyHeader'
+      - $ref: '../../components/parameters/headers.yaml#/CorrelationIdHeader'
+      - $ref: '../../components/parameters/headers.yaml#/RequestIdHeader'
+      - $ref: '../../components/parameters/headers.yaml#/LanguageParam'
       - name: channel
         in: query
         required: true
@@ -30,5 +31,7 @@
         $ref: '../../components/responses/common.yaml#/Accepted'
       '400':
         $ref: '../../components/responses/common.yaml#/BadRequest'
+      '429':
+        description: Too many requests
       '500':
         $ref: '../../components/responses/common.yaml#/InternalServerError'
