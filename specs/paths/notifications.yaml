@@ -11,6 +11,7 @@
       - $ref: '../../components/parameters/headers.yaml#/IdempotencyKeyHeader'
       - $ref: '../../components/parameters/headers.yaml#/CorrelationIdHeader'
       - $ref: '../../components/parameters/headers.yaml#/RequestIdHeader'
+      - $ref: '../components/parameters/headers.yaml#/TraceParentHeader'
       - $ref: '../../components/parameters/headers.yaml#/LanguageParam'
       - name: channel
         in: query
