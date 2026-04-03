@@ -8,9 +8,11 @@
     operationId: getProducts
 
     parameters:
-      - $ref: '../../shared/headers.yaml#/PageParam'
-      - $ref: '../../shared/headers.yaml#/PageSizeParam'
-      - $ref: '../../shared/headers.yaml#/CorrelationIdHeader'
+      - $ref: '../components/parameters/headers.yaml#/CorrelationIdHeader'
+      - $ref: '../components/parameters/headers.yaml#/RequestIdHeader'
+      - $ref: '../components/parameters/headers.yaml#/TraceParentHeader'
+      - $ref: '../components/parameters/headers.yaml#/PageParam'
+      - $ref: '../components/parameters/headers.yaml#/PageSizeParam'
 
     responses:
       '200':
@@ -31,7 +33,10 @@
     operationId: createProduct
 
     parameters:
-    - $ref: '../components/parameters/headers.yaml#/IdempotencyKeyHeader'
+      - $ref: '../components/parameters/headers.yaml#/IdempotencyKeyHeader'
+      - $ref: '../components/parameters/headers.yaml#/CorrelationIdHeader'
+      - $ref: '../components/parameters/headers.yaml#/RequestIdHeader'
+      - $ref: '../components/parameters/headers.yaml#/TraceParentHeader'
     
     requestBody:
       required: true
