@@ -30,6 +30,9 @@
     summary: Create product
     operationId: createProduct
 
+    parameters:
+    - $ref: '../components/parameters/headers.yaml#/IdempotencyKeyHeader'
+    
     requestBody:
       required: true
       content:
