@@ -25,6 +25,28 @@ IdempotencyKeyHeader:
     example: "abc123-unique-request-id"
 
 
+RequestIdHeader:
+  name: x-request-id
+  in: header
+  description: Unique identifier for this request
+  schema:
+    type: string
+
+TraceParentHeader:
+  name: traceparent
+  in: header
+  description: W3C Trace Context header for distributed tracing
+  schema:
+    type: string
+
+TraceStateHeader:
+  name: tracestate
+  in: header
+  description: Additional trace context information
+  schema:
+    type: string    
+
+
 # --- QUERY PARAMETERS ---
 PageParam:
   name: page
