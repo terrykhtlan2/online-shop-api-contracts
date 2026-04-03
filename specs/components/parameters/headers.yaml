@@ -12,6 +12,19 @@ CorrelationIdHeader:
     format: uuid
     example: "550e8400-e29b-41d4-a716-446655440000"
 
+
+IdempotencyKeyHeader:
+  name: Idempotency-Key
+  in: header
+  required: false              # ← Default is false. Endpoints override if needed.
+  description: |
+    Unique key to ensure idempotent processing of POST requests.
+    If the same key is reused, the server returns the original response.
+  schema:
+    type: string
+    example: "abc123-unique-request-id"
+
+
 # --- QUERY PARAMETERS ---
 PageParam:
   name: page
