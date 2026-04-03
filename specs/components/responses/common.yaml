@@ -8,22 +8,22 @@ Accepted:
         $ref: '../schemas/notification.yaml#/NotificationResponse'
 
 BadRequest:
-  description: Bad request
+  description: Invalid request
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: '../schemas/common.yaml#/ErrorResponse'
+        $ref: '../schemas/errors.yaml#/ProblemDetails'
 
 NotFound:
   description: Resource not found
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: '../schemas/common.yaml#/ErrorResponse'
+        $ref: '../schemas/errors.yaml#/ProblemDetails'
 
 InternalServerError:
   description: Internal server error
   content:
-    application/json:
+    application/problem+json:
       schema:
-        $ref: '../schemas/common.yaml#/ErrorResponse'
+        $ref: '../schemas/errors.yaml#/ProblemDetails'
