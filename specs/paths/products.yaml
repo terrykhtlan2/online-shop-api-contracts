@@ -2,6 +2,9 @@
 
 /products:
   get:
+    security:
+      - OAuth2: [products.read]
+      - MutualTLS: []
     tags:
       - Products
     summary: Retrieve product catalogue
@@ -27,6 +30,9 @@
         $ref: '../../components/responses/common.yaml#/InternalServerError'
 
   post:
+    security:
+      - OAuth2: [products.write]
+      - MutualTLS: []
     tags:
       - Products
     summary: Create product
@@ -63,6 +69,9 @@
 
 /products/{productId}:
   get:
+    security:
+      - OAuth2: [products.read]
+      - MutualTLS: []
     tags:
       - Products
     summary: Get product by ID
