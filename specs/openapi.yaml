@@ -36,10 +36,24 @@ paths:
 components:
 
   securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+
+    OAuth2:
+      type: oauth2
+      description: |
+        OAuth2 Authorization Code Flow with PKCE (FAPI compliant).
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.online-shop.com/oauth/authorize
+          tokenUrl: https://auth.online-shop.com/oauth/token
+          scopes:
+            products.read: Read product catalogue
+            products.write: Modify products
+            notifications.send: Send notifications
+
+    MutualTLS:
+      type: mutualTLS
+      description: |
+        Mutual TLS required for confidential clients (FAPI requirement)
 
   parameters:
     CorrelationIdHeader:
