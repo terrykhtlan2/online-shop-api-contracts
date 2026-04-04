@@ -22,9 +22,8 @@ tags:
   - name: Notifications
     description: Notification domain operations
 
-security:
-  - BearerAuth: []
-
+security:         
+  - OAuth2: []
 paths:
   /products:
     $ref: './domains/products/paths.yaml#/products'
@@ -34,24 +33,23 @@ paths:
     $ref: './domains/notifications/paths.yaml#/notifications'
 
 components:
-
-  securitySchemes:
-
-    OAuth2:
+  securitySchemes:            #Security schemes are defined centrally under the components section of the root OpenAPI contract, and then applied at the operation level using scoped permissions.
+                              #A subsection that defines authentication methods available for your AP   
+    OAuth2:                   # this is first security scheme (we can call it anything)
       type: oauth2
       description: |
-        OAuth2 Authorization Code Flow with PKCE (FAPI compliant).
-      flows:
-        authorizationCode:
-          authorizationUrl: https://auth.online-shop.com/oauth/authorize
-          tokenUrl: https://auth.online-shop.com/oauth/token
-          scopes:
+        OAuth2 Authorization Code Flow with PKCE -Proof of Key Code Exchange (FAPI compliant).
+      flows:                  # OAuth2 has different "flows" (also called grants). This section defines which flow(s) are supported.
+        authorizationCode:    # Specifies the Authorization Code Flow (the one you've been learning with PKCE). Other possible flows: clientCredentials, implicit, password (but those are less secure or deprecated).
+          authorizationUrl: https://auth.online-shop.com/oauth/authorize              #The endpoint ( IdP's authorize endpoint) where the client redirects the user to log in
+          tokenUrl: https://auth.online-shop.com/oauth/token                          #The endpoint where the client exchanges the authorization code for tokens                        
+          scopes:             #Defines the permission levels (scopes) available for this API                                    
             products.read: Read product catalogue
             products.write: Modify products
-            notifications.send: Send notifications
+            notifications.send: Send notifications             #A client with this scope can trigger push/email notifications.
 
-    MutualTLS:
-      type: mutualTLS
+    MutualTLS:               # this is the 2nd security scheme. FAPI requires mutual TLS for confidential clients (backend services).
+      type: mutualTLS        # Client verifies the server (normal TLS). The server also verifies the client (the "mutual" part)
       description: |
         Mutual TLS required for confidential clients (FAPI requirement)
 
