@@ -46,6 +46,47 @@ TraceStateHeader:
   schema:
     type: string    
 
+SignatureHeader:               #Signature: keyId="client-123",algorithm="rsa-sha256",headers="(request-target) host date digest",signature="j7c3m9X2aB4fK8..."
+  name: Signature
+  in: header
+  required: true
+  description: |
+    HTTP Signature ensuring request integrity.
+    Covers (request-target), host, date, and digest.
+  schema:
+    type: string
+
+DigestHeader:
+  name: Digest          # HTTP header for content hashing
+  in: header
+  required: true
+  description: |
+    SHA-256 hash of the request body.   
+    Used to detect payload tampering.
+  schema:
+    type: string
+    example: SHA-256=abc123...
+
+DateHeader:
+  name: Date
+  in: header
+  required: true
+  description: Request timestamp (RFC 7231)
+  schema:
+    type: string
+
+HostHeader:
+  name: Host
+  in: header
+  required: true
+  description: Target host
+  schema:
+    type: string
+
+
+
+
+
 
 # --- QUERY PARAMETERS ---
 PageParam:
